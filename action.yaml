@@ -1,0 +1,25 @@
+name: "JSON array to files"
+description: Unwrap JSON array to list of files.
+author: Vladimir Levin
+branding:
+  icon: code
+  color: purple
+inputs:
+  input:
+    description: 'JSON'
+    required: true
+  type:
+    description: 'Type of input data `["flat-json", "nested-json"]` (default: "flat-json")'
+  key:
+    description: If `type="nested-json"` - which key should be used
+  extension:
+    description: "Extension of file (default: 'json')"
+    default: json
+  prefix:
+    description: "File prefix"
+outputs:
+  result: # id of output
+    description: Array of file paths
+runs:
+  using: 'node20'
+  main: 'action/index.js'
