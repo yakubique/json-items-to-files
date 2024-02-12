@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import { InputOptions } from '@actions/core';
 
 enum Inputs {
     Input = 'input',
@@ -6,6 +7,7 @@ enum Inputs {
     Key = 'key',
     Extension = 'extension',
     Prefix = 'prefix',
+    FromFile = 'from_file'
 }
 
 export enum Types {
@@ -17,12 +19,25 @@ function isBlank(value: any): boolean {
     return value === null || value === undefined || (value.length !== undefined && value.length === 0);
 }
 
+export function isNotBlank(value: any): boolean {
+    return value !== null && value !== undefined && (value.length === undefined || value.length > 0);
+}
+
+export function getBooleanInput(name: string, options?: InputOptions): boolean {
+    const value = core.getInput(name, options);
+
+    return isNotBlank(value) &&
+        ['y', 'yes', 't', 'true', 'e', 'enable', 'enabled', 'on', 'ok', '1']
+            .includes(value.trim().toLowerCase());
+}
+
 export interface ActionInputs {
     input: string;
     type: string;
     key: string;
     extension: string;
     prefix: string;
+    fromFile: boolean;
 }
 
 export function getInputs(): ActionInputs {
@@ -49,6 +64,7 @@ export function getInputs(): ActionInputs {
     }
 
     result.prefix = `${core.getInput(Inputs.Prefix, { required: false })}`
+    result.fromFile = getBooleanInput(Inputs.FromFile, { required: false })
 
     return result;
 }

@@ -17,6 +17,9 @@ inputs:
     default: json
   prefix:
     description: "File prefix"
+  from_file:
+    description: "Load json from file (default: 'false')"
+    default: 'false'
 outputs:
   result: # id of output
     description: Array of file paths

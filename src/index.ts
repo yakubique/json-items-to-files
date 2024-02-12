@@ -26,7 +26,13 @@ function setOutputs(response: any, log?: boolean) {
 (async function run() {
     try {
         const inputs: ActionInputs = getInputs();
-        const input = JSON.parse(inputs.input) as any[]
+        let input = [];
+
+        if (inputs.fromFile) {
+            input = JSON.parse(fs.readFileSync(inputs.input, { encoding: "utf8" })) as any[];
+        } else {
+            input = JSON.parse(inputs.input) as any[]
+        }
 
         const makePath = (filename: string) => {
             const suffix = `${filename}.${inputs.extension}`;
@@ -34,7 +40,7 @@ function setOutputs(response: any, log?: boolean) {
             return inputs.prefix ? path.join(inputs.prefix, suffix) : suffix;
         }
 
-        const result = [];
+        const result = [] as string[];
 
         for (let i = 0; i < input.length; i++) {
             const item = input[i];
