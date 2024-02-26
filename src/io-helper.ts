@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { InputOptions } from '@actions/core';
+import { getBooleanInput, getOptional } from "@yakubique/atils/dist";
 
 enum Inputs {
     Input = 'input',
@@ -13,22 +13,6 @@ enum Inputs {
 export enum Types {
     FlatJSON = 'flat-json',
     NestedJSON = 'nested-json'
-}
-
-function isBlank(value: any): boolean {
-    return value === null || value === undefined || (value.length !== undefined && value.length === 0);
-}
-
-export function isNotBlank(value: any): boolean {
-    return value !== null && value !== undefined && (value.length === undefined || value.length > 0);
-}
-
-export function getBooleanInput(name: string, options?: InputOptions): boolean {
-    const value = core.getInput(name, options);
-
-    return isNotBlank(value) &&
-        ['y', 'yes', 't', 'true', 'e', 'enable', 'enabled', 'on', 'ok', '1']
-            .includes(value.trim().toLowerCase());
 }
 
 export interface ActionInputs {
@@ -45,23 +29,13 @@ export function getInputs(): ActionInputs {
 
     result.input = `${core.getInput(Inputs.Input, { required: true })}`
 
-    const typeVar = core.getInput(Inputs.Type, { required: false })
-    if (isBlank(typeVar)) {
-        result.type = Types.FlatJSON
-    } else {
-        result.type = typeVar
-    }
+    result.type = getOptional(Inputs.Type, Types.FlatJSON, { required: false })
 
     if (result.type == Types.NestedJSON) {
         result.key = core.getInput(Inputs.Key, { required: true })
     }
 
-    const extension = core.getInput(Inputs.Extension, { required: false })
-    if (isBlank(extension)) {
-        result.extension = 'json'
-    } else {
-        result.extension = extension.replace('.', '')
-    }
+    result.extension = getOptional(Inputs.Extension, 'json', { required: false })
 
     result.prefix = `${core.getInput(Inputs.Prefix, { required: false })}`
     result.fromFile = getBooleanInput(Inputs.FromFile, { required: false })

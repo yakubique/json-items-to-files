@@ -3,36 +3,18 @@ import { ActionInputs, getInputs, Types } from './io-helper';
 import path from "node:path";
 import fs from "node:fs";
 import get from 'lodash.get';
+import { buildOutput, inputJson } from "@yakubique/atils/dist";
 
 enum Outputs {
     result = 'result',
 }
 
-function setOutputs(response: any, log?: boolean) {
-    let message = '';
-    for (const key in Outputs) {
-        const field: string = (Outputs as any)[key];
-        if (log) {
-            message += `\n  ${field}: ${JSON.stringify(response[field])}`;
-        }
-        core.setOutput(field, response[field]);
-    }
-
-    if (log) {
-        core.info('Outputs:' + message);
-    }
-}
+const setOutputs = buildOutput(Outputs);
 
 (async function run() {
     try {
         const inputs: ActionInputs = getInputs();
-        let input = [];
-
-        if (inputs.fromFile) {
-            input = JSON.parse(fs.readFileSync(inputs.input, { encoding: "utf8" })) as any[];
-        } else {
-            input = JSON.parse(inputs.input) as any[]
-        }
+        const input = inputJson(inputs.input, inputs.fromFile);
 
         const makePath = (filename: string) => {
             const suffix = `${filename}.${inputs.extension}`;
